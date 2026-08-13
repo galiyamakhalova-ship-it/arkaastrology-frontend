@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ARKA. Astrology Guide</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f0c1a;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.logo{font-size:64px;margin-bottom:24px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#c9a84c,#e8c96a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:#a89bc0;font-size:15px;margin-bottom:48px;line-height:1.6}
+.btn{background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#0f0c1a;border:none;padding:16px;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;width:100%;max-width:320px;margin-bottom:16px}
+.note{color:#5a4e6e;font-size:13px}
+</style>
+</head>
+<body>
+<div class="logo">🪐</div>
+<h1>ARKA. Astrology</h1>
+<p class="sub">Your Kundli, daily Rashifal<br>and Panchang — calculated<br>from your exact birth moment.</p>
+<button class="btn" id="startBtn">✨ Get Started</button>
+<p class="note">Full app launching soon</p>
+<script>
+if(window.Telegram&&window.Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
+document.getElementById('startBtn').onclick=function(){if(window.Telegram&&window.Telegram.WebApp){Telegram.WebApp.sendData('start');}};
+</script>
+</body>
+</html>
