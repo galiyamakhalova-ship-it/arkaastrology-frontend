@@ -417,7 +417,7 @@ function lonToTz(lon){
 
 // ── Onboarding submit ───────────────────────────────
 function saveCity(){
-  var c = document.getElementById('inp-city&).value.trim();
+  var c = document.getElementById('inp-city').value.trim();
   if(!c){ document.getElementById('inp-city').focus(); return; }
   if(!selLat){
     document.getElementById('city-error').style.display = 'block';
