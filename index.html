@@ -218,6 +218,78 @@ select.input-field option{background:#1A1533}
 
 </div><!-- #app -->
 
+<!-- Hidden tab content — no JS strings needed -->
+<div id="tab-0" style="display:none">
+  <div class="card">
+    <div class="card-title">Today's Rashifal</div>
+    <div class="card-big">Shubh Din</div>
+    <div class="card-body">Today is highly auspicious for new beginnings. The Moon transits your 5th house, enhancing creativity and romance. Avoid major financial decisions after 4pm. Family matters bring joy in the evening.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Auspicious Times</div>
+    <div class="card-body">
+      <div class="panchang-row"><span class="panchang-label">Brahma Muhurta</span><span class="panchang-value">04:32 - 05:20</span></div>
+      <div class="panchang-row"><span class="panchang-label">Abhijit Muhurta</span><span class="panchang-value">11:48 - 12:36</span></div>
+      <div class="panchang-row"><span class="panchang-label">Rahu Kaal</span><span class="panchang-value">09:00 - 10:30</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Lucky Elements</div>
+    <div class="card-body">
+      <div class="panchang-row"><span class="panchang-label">Lucky Colour</span><span class="panchang-value">Yellow</span></div>
+      <div class="panchang-row"><span class="panchang-label">Lucky Number</span><span class="panchang-value">3, 7</span></div>
+      <div class="panchang-row"><span class="panchang-label">Lucky Direction</span><span class="panchang-value">East</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-1" style="display:none">
+  <div class="card">
+    <div class="card-title">Lagna Chart</div>
+    <div class="card-body" style="text-align:center;font-size:13px;color:var(--text-dim)">
+      <div style="margin-bottom:12px">Your Lagna (Ascendant) is <strong style="color:var(--gold)">Kanya (Virgo)</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Planetary Positions</div>
+    <div class="card-body">
+      <div class="planet-row"><span class="planet-icon">Sun</span><span class="planet-name">Sun</span><span class="planet-sign">Simha (Leo) - 3rd</span></div>
+      <div class="planet-row"><span class="planet-icon">Moon</span><span class="planet-name">Moon</span><span class="planet-sign">Vrishchika - 5th</span></div>
+      <div class="planet-row"><span class="planet-icon">Mars</span><span class="planet-name">Mars</span><span class="planet-sign">Mesha (Aries) - 8th</span></div>
+      <div class="planet-row"><span class="planet-icon">Mer</span><span class="planet-name">Mercury</span><span class="planet-sign">Kanya (Virgo) - 1st</span></div>
+      <div class="planet-row"><span class="planet-icon">Jup</span><span class="planet-name">Jupiter</span><span class="planet-sign">Karka (Cancer) - 11th</span></div>
+      <div class="planet-row"><span class="planet-icon">Ven</span><span class="planet-name">Venus</span><span class="planet-sign">Tula (Libra) - 2nd</span></div>
+      <div class="planet-row"><span class="planet-icon">Sat</span><span class="planet-name">Saturn</span><span class="planet-sign">Makara (Capricorn) - 5th</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-2" style="display:none">
+  <div class="card">
+    <div class="card-title">Today's Panchang</div>
+    <div class="card-body">
+      <div class="panchang-row"><span class="panchang-label">Tithi</span><span class="panchang-value">Shukla Dashami</span></div>
+      <div class="panchang-row"><span class="panchang-label">Vara (Day)</span><span class="panchang-value">Shukravar (Friday)</span></div>
+      <div class="panchang-row"><span class="panchang-label">Nakshatra</span><span class="panchang-value">Vishakha</span></div>
+      <div class="panchang-row"><span class="panchang-label">Yoga</span><span class="panchang-value">Shubha</span></div>
+      <div class="panchang-row"><span class="panchang-label">Karana</span><span class="panchang-value">Bava</span></div>
+      <div class="panchang-row"><span class="panchang-label">Sunrise</span><span class="panchang-value">06:12 AM</span></div>
+      <div class="panchang-row"><span class="panchang-label">Sunset</span><span class="panchang-value">06:44 PM</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Choghadiya</div>
+    <div class="card-body">
+      <div class="panchang-row"><span class="panchang-label">06:12 - 07:42</span><span class="panchang-value" style="color:#6ECC7A">Labh (Good)</span></div>
+      <div class="panchang-row"><span class="panchang-label">07:42 - 09:12</span><span class="panchang-value" style="color:#6ECC7A">Amrit (Good)</span></div>
+      <div class="panchang-row"><span class="panchang-label">09:12 - 10:42</span><span class="panchang-value" style="color:var(--text-dim)">Kaal (Avoid)</span></div>
+      <div class="panchang-row"><span class="panchang-label">10:42 - 12:12</span><span class="panchang-value" style="color:#6ECC7A">Shubh (Good)</span></div>
+      <div class="panchang-row"><span class="panchang-label">12:12 - 13:42</span><span class="panchang-value" style="color:var(--text-dim)">Rog (Avoid)</span></div>
+      <div class="panchang-row"><span class="panchang-label">13:42 - 15:12</span><span class="panchang-value" style="color:var(--text-dim)">Udveg (Avoid)</span></div>
+    </div>
+  </div>
+</div>
+
 <script>
 if(window.Telegram && window.Telegram.WebApp){
   Telegram.WebApp.ready();
@@ -228,13 +300,15 @@ var userData = {name:'', lang:'en', city:''};
 var curTab = 0;
 
 function go(n){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  var screens = document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
   document.getElementById('s'+n).classList.add('active');
 }
 
 function setLang(l, el){
   userData.lang = l;
-  document.querySelectorAll('.lang-card').forEach(c=>c.classList.remove('sel'));
+  var cards = document.querySelectorAll('.lang-card');
+  for(var i=0;i<cards.length;i++) cards[i].classList.remove('sel');
   el.classList.add('sel');
 }
 
@@ -264,29 +338,36 @@ function saveCity(){
   go(6);
   setTimeout(function(){
     document.getElementById('dash-name').textContent = userData.name;
-    var rashis = ['♈ Mesha','♉ Vrishabha','♊ Mithuna','♋ Karka','♌ Simha','♍ Kanya','♎ Tula','♏ Vrishchika','♐ Dhanu','♑ Makara','♒ Kumbha','♓ Meena'];
-    var naks = ['Ashwini','Bharani','Rohini','Ardra','Punarvasu','Pushya','Magha','Purva Phalguni','Hasta','Chitra','Swati','Jyeshtha','Mula','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Uttara Bhadrapada','Revati'];
+    var rashis = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
+    var naks = ['Ashwini','Bharani','Rohini','Ardra','Punarvasu','Pushya','Magha','Hasta','Chitra','Swati','Jyeshtha','Mula','Shravana','Dhanishtha','Revati'];
     var r = rashis[Math.floor(Math.random()*12)];
-    var nk = naks[Math.floor(Math.random()*19)];
-    document.getElementById('dash-rashi').textContent = r + ' · ' + nk + ' Nakshatra';
-    showTab(0);
+    var nk = naks[Math.floor(Math.random()*15)];
+    document.getElementById('dash-rashi').textContent = r + ' Rashi - ' + nk + ' Nakshatra';
+    showTab(0, null);
     go(7);
   }, 2800);
 }
 
-var tabContents = [
-  `<div class="card"><div class="card-title">Today's Rashifal</div><div class="card-big">वोभदिन</div><div class="card-body">Today is highly auspicious for new beginnings. The Moon transits your 5th house.</div></div><div class="card"><div class="card-title">Auspicious Times</div><div class="card-body"><div class="panchang-row"><span class="panchang-label">Brahma Muhurta</span><span class="panchang-value">04:32 – 05:20</span></div><div class="panchang-row"><span class="panchang-label">Rahu Kaal</span><span class="panchang-value">09:00 – 10:30</span></div></div></div>`,
-  `<div class="card"><div class="card-title">Planetary Positions</div><div class="card-body"><div class="planet-row"><span class="planet-icon">☀️</span><span class="planet-name">Sun</span><span class="planet-sign">Simha · 3rd</span></div><div class="planet-row"><span class="planet-icon">🌙</span><span class="planet-name">Moon</span><span class="planet-sign">Vrishchika · 5th</span></div><div class="planet-row"><span class="planet-icon">♃</span><span class="planet-name">Jupiter</span><span class="planet-sign">Karka · 11th</span></div><div class="planet-row"><span class="planet-icon">♄</span><span class="planet-name">Saturn</span><span class="planet-sign">Makara · 5th</span></div></div></div>`,
-  `<div class="card"><div class="card-title">Today's Panchang</div><div class="card-body"><div class="panchang-row"><span class="panchang-label">Tithi</span><span class="panchang-value">Shukla Dashami</span></div><div class="panchang-row"><span class="panchang-label">Nakshatra</span><span class="panchang-value">Vishakha</span></div><div class="panchang-row"><span class="panchang-label">Yoga</span><span class="panchang-value">Shubha</span></div><div class="panchang-row"><span class="panchang-label">Sunrise</span><span class="panchang-value">06:12 AM</span></div></div></div>`
-];
-function showTab(n,el){curTab=n;document.querySelectorAll('.dash-tab').forEach(function(t,i){t.classList.toggle('active',i===n)});document.getElementById('dash-content').innerHTML=tabContents[n];}
+function showTab(n, el){
+  curTab = n;
+  var tabs = document.querySelectorAll('.dash-tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active',i===n);
+  document.getElementById('dash-content').innerHTML = document.getElementById('tab-'+n).innerHTML;
+}
+
 (function(){
-  var d=document.getElementById('inp-day'),m=document.getElementById('inp-month'),y=document.getElementById('inp-year');
-  for(var i=1;i<=31;i++)d.innerHTML+='<option>'+i'</option>';
-  ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach(function(s,i){m.innerHTML+='<option value='+(i+1)+'>'+s+'</option>';});
-  var yr=new Date().getFullYear();for(var j=yr-5;j>=yr-80;j--)y.innerHTML+='<option>'+j+'</option>';
-  d.value=15;m.value=6;y.value=1990;
-  makeProg('prog3',1,4);makeProg('prog4',2,4);makeProg('prog5',3,4);
+  var dayEl = document.getElementById('inp-day');
+  var monthEl = document.getElementById('inp-month');
+  var yearEl = document.getElementById('inp-year');
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for(var d=1;d<=31;d++){var o=document.createElement('option');o.value=d;o.textContent=d;dayEl.appendChild(o);}
+  for(var m=0;m<months.length;m++){var o=document.createElement('option');o.value=m+1;o.textContent=months[m];monthEl.appendChild(o);}
+  var yr=new Date().getFullYear();
+  for(var y=yr-5;y>=yr-80;y--){var o=document.createElement('option');o.value=y;o.textContent=y;yearEl.appendChild(o);}
+  dayEl.value=15; monthEl.value=6; yearEl.value=1990;
+  makeProg('prog3',1,4);
+  makeProg('prog4',2,4);
+  makeProg('prog5',3,4);
 })();
 </script>
 </body>
