@@ -143,7 +143,7 @@ select.input-field option{background:#1A1533}
   <div class="section-emoji">🙏</div>
   <div class="screen-title">Your Name</div>
   <div class="screen-desc" style="margin-bottom:32px">How should we address you<br>in your readings?</div>
-  <div class="input-group">
+  <div clas="input-group">
     <label class="input-label">Full Name</label>
     <input class="input-field" id="inp-name" type="text" placeholder="e.g. Priya Sharma" autocomplete="off">
   </div>
@@ -153,7 +153,7 @@ select.input-field option{background:#1A1533}
 <!-- S4: Birth Date -->
 <div class="screen" id="s4">
   <div class="progress" id="prog4"></div>
-  <div class="section-emoji">🗓️</div>
+  <div class="section-emoji">🗓</div>
   <div class="screen-title">Date of Birth</div>
   <div class="screen-desc" style="margin-bottom:32px">Your exact birth date is needed<br>for Kundli calculations</div>
   <div class="row">
@@ -182,7 +182,7 @@ select.input-field option{background:#1A1533}
 <!-- S5: City -->
 <div class="screen" id="s5">
   <div class="progress" id="prog5"></div>
-  <div class="section-emoji">📍</div>
+  <div class="section-emoji">📍 </div>
   <div class="screen-title">Birth Place</div>
   <div class="screen-desc" style="margin-bottom:32px">Your birth city helps calculate<br>accurate Lagna and planetary positions</div>
   <div class="input-group" style="max-width:340px;position:relative">
@@ -348,18 +348,35 @@ function onCityInput(val){
   selLat = null; selLon = null;
   clearTimeout(cityTimer);
   if(val.length < 2){ hideCityDrop(); return; }
-  cityTimer = setTimeout(function(){ doSearchCity(val); }, 450);
+  cityTimer = setTimeout(function(){ doSearchCity(val); }, 400);
 }
 
 function doSearchCity(q){
-  var idata = initData();
-  if(!idata){ return; }
-  fetch(API + '/api/location/search?q=' + encodeURIComponent(q), {
-    headers: {'x-init-data': idata}
+  // Use OpenStreetMap Nominatim — no auth required, always works
+  fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) +
+    '&format=json&limit=6&addressdetails=1&featuretype=city', {
+    headers: {'Accept-Language': 'en', 'User-Agent': 'ArkaAstrology/1.0'}
   }).then(function(r){ return r.json(); }).then(function(data){
-    var results = Array.isArray(data) ? data : (data.results || data.data || []);
+    var results = data.map(function(r){
+      var addr = r.address || {};
+      var city = addr.city || addr.town || addr.village || addr.county || r.name || '';
+      var state = addr.state || '';
+      var country = addr.country || '';
+      var label = city + (state && state !== city ? ', ' + state : '') + (country ? ', ' + country : '');
+      return { name: label, lat: parseFloat(r.lat), lon: parseFloat(r.lon) };
+    }).filter(function(r){ return r.name.length > 1; });
     showCityDrop(results);
-  }).catch(function(){});
+  }).catch(function(){
+    // Fallback: try backend
+    var idata = initData();
+    if(!idata) return;
+    fetch(API + '/api/location/search?q=' + encodeURIComponent(q), {
+      headers: {'x-init-data': idata}
+    }).then(function(r){ return r.json(); }).then(function(data){
+      var results = Array.isArray(data) ? data : (data.results || data.data || []);
+      showCityDrop(results);
+    }).catch(function(){});
+  });
 }
 
 function showCityDrop(results){
@@ -383,16 +400,24 @@ function selectCity(i){
   var r = drop._results[i];
   var label = r.name || r.place_name || '';
   document.getElementById('inp-city').value = label;
-  selLat = r.latitude || r.lat || null;
-  selLon = r.longitude || r.lon || null;
-  selTz = r.timezone || '+05:30';
+  selLat = r.lat || r.latitude || null;
+  selLon = r.lon || r.longitude || null;
+  // Estimate timezone from longitude (rough but functional; backend refines it)
+  selTz = r.timezone || (selLon !== null ? lonToTz(selLon) : '+05:30');
   userData.city = label;
   drop.style.display = 'none';
 }
 
+function lonToTz(lon){
+  var offset = Math.round(lon / 15);
+  var sign = offset >= 0 ? '+' : '-';
+  var abs = Math.abs(offset);
+  return sign + String(abs).padStart(2,'0') + ':00';
+}
+
 // ── Onboarding submit ───────────────────────────────
 function saveCity(){
-  var c = document.getElementById('inp-city').value.trim();
+  var c = document.getElementById('inp-city&).value.trim();
   if(!c){ document.getElementById('inp-city').focus(); return; }
   if(!selLat){
     document.getElementById('city-error').style.display = 'block';
