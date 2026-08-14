@@ -99,6 +99,12 @@ select.input-field option{background:#1A1533}
 
 /* Section heading */
 .section-emoji{font-size:40px;margin-bottom:16px}
+
+/* City autocomplete */
+.city-opt{padding:12px 16px;font-size:14px;cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.06)}
+.city-opt:last-child{border-bottom:none}
+.city-opt:hover,.city-opt:active{background:rgba(201,168,76,0.12)}
+.city-err{font-size:12px;color:#ff6b6b;margin-top:6px;display:none}
 </style>
 </head>
 <body>
@@ -179,9 +185,11 @@ select.input-field option{background:#1A1533}
   <div class="section-emoji">📍</div>
   <div class="screen-title">Birth Place</div>
   <div class="screen-desc" style="margin-bottom:32px">Your birth city helps calculate<br>accurate Lagna and planetary positions</div>
-  <div class="input-group" style="max-width:340px">
+  <div class="input-group" style="max-width:340px;position:relative">
     <label class="input-label">City, Country</label>
-    <input class="input-field" id="inp-city" type="text" placeholder="e.g. Mumbai, India" autocomplete="off">
+    <input class="input-field" id="inp-city" type="text" placeholder="e.g. Mumbai, India" autocomplete="off" oninput="onCityInput(this.value)">
+    <div id="city-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#241C4A;border:1px solid rgba(201,168,76,0.3);border-radius:12px;z-index:10;margin-top:4px;overflow:hidden;max-height:200px;overflow-y:auto"></div>
+    <p id="city-error" class="city-err">Please select a city from the list above</p>
   </div>
   <button class="btn-primary" onclick="saveCity()" style="max-width:340px;width:100%">Calculate My Kundli ✨</button>
 </div>
@@ -291,14 +299,17 @@ select.input-field option{background:#1A1533}
 </div>
 
 <script>
-if(window.Telegram && window.Telegram.WebApp){
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-}
-
+var API = 'https://web-production-3fb58.up.railway.app';
 var userData = {name:'', lang:'en', city:''};
 var curTab = 0;
+var selLat = null, selLon = null, selTz = '+05:30';
+var cityTimer = null;
 
+function initData(){
+  return (window.Telegram && window.Telegram.WebApp) ? (Telegram.WebApp.initData || '') : '';
+}
+
+// ── Navigation ──────────────────────────────────────
 function go(n){
   var screens = document.querySelectorAll('.screen');
   for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
@@ -331,23 +342,143 @@ function saveName(){
   go(4);
 }
 
+// ── City autocomplete ───────────────────────────────
+function onCityInput(val){
+  document.getElementById('city-error').style.display = 'none';
+  selLat = null; selLon = null;
+  clearTimeout(cityTimer);
+  if(val.length < 2){ hideCityDrop(); return; }
+  cityTimer = setTimeout(function(){ doSearchCity(val); }, 450);
+}
+
+function doSearchCity(q){
+  var idata = initData();
+  if(!idata){ return; }
+  fetch(API + '/api/location/search?q=' + encodeURIComponent(q), {
+    headers: {'x-init-data': idata}
+  }).then(function(r){ return r.json(); }).then(function(data){
+    showCityDrop(data.results || []);
+  }).catch(function(){});
+}
+
+function showCityDrop(results){
+  var drop = document.getElementById('city-dropdown');
+  if(!results || !results.length){ drop.style.display='none'; return; }
+  drop._results = results;
+  drop.innerHTML = results.map(function(r,i){
+    var label = r.name || (r.place_name || '');
+    return '<div class="city-opt" onclick="selectCity('+i+')">' + label + '</div>';
+  }).join('');
+  drop.style.display = 'block';
+}
+
+function hideCityDrop(){
+  var drop = document.getElementById('city-dropdown');
+  if(drop) drop.style.display = 'none';
+}
+
+function selectCity(i){
+  var drop = document.getElementById('city-dropdown');
+  var r = drop._results[i];
+  var label = r.name || r.place_name || '';
+  document.getElementById('inp-city').value = label;
+  selLat = r.latitude || r.lat || null;
+  selLon = r.longitude || r.lon || null;
+  selTz = r.timezone || '+05:30';
+  userData.city = label;
+  drop.style.display = 'none';
+}
+
+// ── Onboarding submit ───────────────────────────────
 function saveCity(){
   var c = document.getElementById('inp-city').value.trim();
-  if(!c){document.getElementById('inp-city').focus();return;}
+  if(!c){ document.getElementById('inp-city').focus(); return; }
+  if(!selLat){
+    document.getElementById('city-error').style.display = 'block';
+    return;
+  }
   userData.city = c;
   go(6);
+
+  var day   = document.getElementById('inp-day').value;
+  var month = document.getElementById('inp-month').value;
+  var year  = document.getElementById('inp-year').value;
+  var time  = document.getElementById('inp-time').value || null;
+  var bDate = year + '-' + String(month).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+
+  var idata = initData();
+  if(idata){
+    fetch(API + '/api/onboarding', {
+      method: 'POST',
+      headers: {'x-init-data': idata, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: userData.name,
+        birth_date: bDate,
+        birth_time: time,
+        birth_city: c,
+        latitude: selLat,
+        longitude: selLon,
+        timezone: selTz,
+        language: userData.lang
+      })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if(data.rashi) userData.rashi = data.rashi;
+    }).catch(function(){});
+  }
+
   setTimeout(function(){
     document.getElementById('dash-name').textContent = userData.name;
-    var rashis = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha','Meena'];
-    var naks = ['Ashwini','Bharani','Rohini','Ardra','Punarvasu','Pushya','Magha','Hasta','Chitra','Swati','Jyeshtha','Mula','Shravana','Dhanishtha','Revati'];
-    var r = rashis[Math.floor(Math.random()*12)];
-    var nk = naks[Math.floor(Math.random()*15)];
-    document.getElementById('dash-rashi').textContent = r + ' Rashi - ' + nk + ' Nakshatra';
     showTab(0, null);
     go(7);
+    loadDashboard();
   }, 2800);
 }
 
+// ── Dashboard data ──────────────────────────────────
+function loadDashboard(){
+  var idata = initData();
+  if(!idata){ return; }
+
+  fetch(API + '/api/rashifal', {headers: {'x-init-data': idata}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data) return;
+      var sign = data.sign || '';
+      if(sign) document.getElementById('dash-rashi').textContent =
+        sign.charAt(0).toUpperCase() + sign.slice(1) + ' Rashi';
+      if(data.prediction){
+        var t0 = document.getElementById('tab-0');
+        var bodyEl = t0 ? t0.querySelector('.card-body') : null;
+        if(bodyEl) bodyEl.textContent = data.prediction;
+        var bigEl = t0 ? t0.querySelector('.card-big') : null;
+        if(bigEl) bigEl.textContent = data.is_full ? 'Full Reading' : 'Today';
+        document.getElementById('dash-content').innerHTML = t0.innerHTML;
+      }
+    }).catch(function(){});
+
+  fetch(API + '/api/panchang', {headers: {'x-init-data': idata}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data) return;
+      var p = data.panchang || {};
+      var t2 = document.getElementById('tab-2');
+      if(!t2) return;
+      var rows = '';
+      var fields = [['Tithi','tithi'],['Nakshatra','nakshatra'],['Yoga','yoga'],['Vara','vara']];
+      fields.forEach(function(f){
+        var val = p[f[1]];
+        if(val) rows += '<div class="panchang-row"><span class="panchang-label">'+f[0]+'</span><span class="panchang-value">'+(val.name||val)+'</span></div>';
+      });
+      if(p.sunrise) rows += '<div class="panchang-row"><span class="panchang-label">Sunrise</span><span class="panchang-value">'+p.sunrise+'</span></div>';
+      if(p.sunset)  rows += '<div class="panchang-row"><span class="panchang-label">Sunset</span><span class="panchang-value">'+p.sunset+'</span></div>';
+      if(rows){
+        var card = t2.querySelector('.card .card-body');
+        if(card) card.innerHTML = rows;
+      }
+    }).catch(function(){});
+}
+
+// ── Tabs ────────────────────────────────────────────
 function showTab(n, el){
   curTab = n;
   var tabs = document.querySelectorAll('.dash-tab');
@@ -355,7 +486,31 @@ function showTab(n, el){
   document.getElementById('dash-content').innerHTML = document.getElementById('tab-'+n).innerHTML;
 }
 
+// ── Check existing user (skip onboarding) ───────────
+function checkExistingUser(){
+  var idata = initData();
+  if(!idata) return;
+  fetch(API + '/api/me', {headers: {'x-init-data': idata}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data) return;
+      var user = data.user || {};
+      if(user.onboarding_done){
+        userData.name = user.name || '';
+        document.getElementById('dash-name').textContent = userData.name;
+        showTab(0, null);
+        go(7);
+        loadDashboard();
+      }
+    }).catch(function(){});
+}
+
+// ── Init ────────────────────────────────────────────
 (function(){
+  if(window.Telegram && window.Telegram.WebApp){
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+  }
   var dayEl = document.getElementById('inp-day');
   var monthEl = document.getElementById('inp-month');
   var yearEl = document.getElementById('inp-year');
@@ -368,6 +523,7 @@ function showTab(n, el){
   makeProg('prog3',1,4);
   makeProg('prog4',2,4);
   makeProg('prog5',3,4);
+  checkExistingUser();
 })();
 </script>
 </body>
