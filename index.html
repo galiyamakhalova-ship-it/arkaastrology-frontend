@@ -2,28 +2,292 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ARKA. Astrology Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ARKA. Astrology</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f0c1a;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-.logo{font-size:64px;margin-bottom:24px}
-h1{font-size:28px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#c9a84c,#e8c96a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{color:#a89bc0;font-size:15px;margin-bottom:48px;line-height:1.6}
-.btn{background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#0f0c1a;border:none;padding:16px;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;width:100%;max-width:320px;margin-bottom:16px}
-.note{color:#5a4e6e;font-size:13px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#app{width:100%;height:100%;background:#1A1533;color:#fff;font-family:'Noto Sans',sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;position:relative}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:flex-start;width:100%;height:100%;padding:0;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.active{display:flex}
+
+/* Colors */
+:root{
+  --gold:#C9A84C;--gold-light:#E8C96A;--purple:#1A1533;--purple2:#241C4A;
+  --purple3:#2D2060;--text-dim:rgba(255,255,255,0.55);--text-faint:rgba(255,255,255,0.3);
+}
+
+/* ── Screen 1: SPLASH ── */
+#s1{justify-content:center;padding:32px 24px}
+.logo-star{font-size:72px;margin-bottom:24px;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.logo-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;letter-spacing:.04em;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.logo-sub{font-size:13px;color:var(--text-dim);letter-spacing:.18em;text-transform:uppercase;margin-bottom:48px}
+.tagline{font-size:15px;color:rgba(255,255,255,0.7);text-align:center;line-height:1.7;margin-bottom:56px}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1A1533;border:none;padding:16px 32px;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;width:100%;max-width:340px;font-family:inherit;letter-spacing:.01em}
+.btn-primary:active{transform:scale(0.97)}
+.hint{font-size:12px;color:var(--text-faint);margin-top:16px;text-align:center}
+
+/* ── Screen 2: LANGUAGE ── */
+#s2{justify-content:center;padding:32px 24px}
+.screen-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.screen-desc{font-size:14px;color:var(--text-dim);text-align:center;line-height:1.6;margin-bottom:40px}
+.lang-card{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px 24px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:16px;width:100%;max-width:340px;transition:border-color .2s}
+.lang-card:hover,.lang-card.sel{border-color:var(--gold);background:rgba(201,168,76,0.08)}
+.lang-flag{font-size:32px}
+.lang-name{font-size:17px;font-weight:600}
+.lang-native{font-size:13px;color:var(--text-dim)}
+
+/* ── Screen 3: NAME ── */
+#s3{justify-content:center;padding:32px 24px}
+.input-group{width:100%;max-width:340px;margin-bottom:24px}
+.input-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;display:block}
+.input-field{width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;padding:16px 18px;font-size:17px;color:#fff;font-family:inherit;outline:none;-webkit-appearance:none}
+.input-field:focus{border-color:var(--gold)}
+.input-field::placeholder{color:var(--text-faint)}
+
+/* ── Screen 4: BIRTH DATE ── */
+#s4{justify-content:center;padding:32px 24px}
+.row{display:flex;gap:12px;width:100%;max-width:340px}
+.row .input-group{flex:1}
+select.input-field{cursor:pointer}
+select.input-field option{background:#1A1533}
+
+/* ── Screen 5: BIRTH CITY ── */
+#s5{justify-content:center;padding:32px 24px}
+
+/* ── Screen 6: LOADING ── */
+#s6{justify-content:center;align-items:center;padding:32px 24px}
+.loader-ring{width:80px;height:80px;border:3px solid rgba(201,168,76,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:32px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:15px;color:var(--text-dim);text-align:center;line-height:1.7}
+
+/* ── Screen 7: DASHBOARD ── */
+#s7{padding:0;align-items:stretch}
+.dash-header{background:linear-gradient(180deg,var(--purple2) 0%,transparent 100%);padding:52px 20px 20px;text-align:center;flex-shrink:0}
+.dash-greeting{font-size:13px;color:var(--text-dim);margin-bottom:4px}
+.dash-name{font-size:22px;font-weight:700;margin-bottom:4px}
+.dash-rashi{font-size:13px;color:var(--gold)}
+.dash-tabs{display:flex;padding:0 20px;gap:0;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;overflow-x:auto}
+.dash-tab{padding:12px 16px;font-size:13px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0}
+.dash-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.dash-content{flex:1;overflow-y:auto;padding:20px}
+.card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:20px;margin-bottom:16px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.card-body{font-size:14px;color:rgba(255,255,255,0.8);line-height:1.7}
+.card-big{font-size:28px;font-weight:700;font-family:'Cormorant Garamond',serif;margin-bottom:4px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.planet-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.planet-row:last-child{border-bottom:none}
+.planet-name{font-size:14px;font-weight:600}
+.planet-sign{font-size:13px;color:var(--text-dim)}
+.planet-icon{font-size:18px;width:32px;text-align:center}
+.panchang-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.panchang-row:last-child{border-bottom:none}
+.panchang-label{font-size:12px;color:var(--text-dim)}
+.panchang-value{font-size:13px;font-weight:600;text-align:right}
+.nav-bar{display:flex;background:#100D22;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--text-faint);font-size:10px;font-weight:600;border:none;background:none;font-family:inherit}
+.nav-btn.active{color:var(--gold)}
+.nav-btn span:first-child{font-size:20px}
+
+/* Progress bar */
+.progress{display:flex;gap:6px;margin-bottom:32px}
+.progress-dot{height:4px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;max-width:32px}
+.progress-dot.done{background:var(--gold)}
+
+/* Section heading */
+.section-emoji{font-size:40px;margin-bottom:16px}
 </style>
 </head>
 <body>
-<div class="logo">🪐</div>
-<h1>ARKA. Astrology</h1>
-<p class="sub">Your Kundli, daily Rashifal<br>and Panchang — calculated<br>from your exact birth moment.</p>
-<button class="btn" id="startBtn">✨ Get Started</button>
-<p class="note">Full app launching soon</p>
+<div id="app">
+
+<!-- S1: Splash -->
+<div class="screen active" id="s1">
+  <div class="logo-star">🪐</div>
+  <div class="logo-title">ARKA.</div>
+  <div class="logo-sub">Astrology Guide</div>
+  <div class="tagline">Your Kundli, daily Rashifal<br>and Panchang — calculated<br>from your exact birth moment.</div>
+  <button class="btn-primary" onclick="go(2)">✨ Get Started</button>
+  <p class="hint">Vedic Astrology • Jyotish</p>
+</div>
+
+<!-- S2: Language -->
+<div class="screen" id="s2">
+  <div class="section-emoji">🌐</div>
+  <div class="screen-title">Choose Language</div>
+  <div class="screen-desc">Select your preferred language<br>for readings and horoscopes</div>
+  <div class="lang-card sel" onclick="setLang('en',this)">
+    <span class="lang-flag">🇬🇧</span>
+    <div><div class="lang-name">English</div><div class="lang-native">Readings in English</div></div>
+  </div>
+  <div class="lang-card" onclick="setLang('hi',this)">
+    <span class="lang-flag">🇮🇳</span>
+    <div><div class="lang-name">हिन्दी</div><div class="lang-native">Hindi readings</div></div>
+  </div>
+  <br>
+  <button class="btn-primary" onclick="go(3)" style="max-width:340px;width:100%">Continue →</button>
+</div>
+
+<!-- S3: Name -->
+<div class="screen" id="s3">
+  <div class="progress" id="prog3"></div>
+  <div class="section-emoji">🙏</div>
+  <div class="screen-title">Your Name</div>
+  <div class="screen-desc" style="margin-bottom:32px">How should we address you<br>in your readings?</div>
+  <div class="input-group">
+    <label class="input-label">Full Name</label>
+    <input class="input-field" id="inp-name" type="text" placeholder="e.g. Priya Sharma" autocomplete="off">
+  </div>
+  <button class="btn-primary" onclick="saveName()" style="max-width:340px;width:100%">Continue →</button>
+</div>
+
+<!-- S4: Birth Date -->
+<div class="screen" id="s4">
+  <div class="progress" id="prog4"></div>
+  <div class="section-emoji">🗓️</div>
+  <div class="screen-title">Date of Birth</div>
+  <div class="screen-desc" style="margin-bottom:32px">Your exact birth date is needed<br>for Kundli calculations</div>
+  <div class="row">
+    <div class="input-group">
+      <label class="input-label">Day</label>
+      <select class="input-field" id="inp-day"></select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Month</label>
+      <select class="input-field" id="inp-month"></select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Year</label>
+      <select class="input-field" id="inp-year"></select>
+    </div>
+  </div>
+  <div class="input-group" style="max-width:340px">
+    <label class="input-label">Time of Birth</label>
+    <input class="input-field" id="inp-time" type="time">
+    <p style="font-size:11px;color:var(--text-faint);margin-top:6px">Leave blank if unknown</p>
+  </div>
+  <br>
+  <button class="btn-primary" onclick="go(5)" style="max-width:340px;width:100%">Continue →</button>
+</div>
+
+<!-- S5: City -->
+<div class="screen" id="s5">
+  <div class="progress" id="prog5"></div>
+  <div class="section-emoji">📍</div>
+  <div class="screen-title">Birth Place</div>
+  <div class="screen-desc" style="margin-bottom:32px">Your birth city helps calculate<br>accurate Lagna and planetary positions</div>
+  <div class="input-group" style="max-width:340px">
+    <label class="input-label">City, Country</label>
+    <input class="input-field" id="inp-city" type="text" placeholder="e.g. Mumbai, India" autocomplete="off">
+  </div>
+  <button class="btn-primary" onclick="saveCity()" style="max-width:340px;width:100%">Calculate My Kundli ✨</button>
+</div>
+
+<!-- S6: Loading -->
+<div class="screen" id="s6">
+  <div class="loader-ring"></div>
+  <div class="screen-title">Calculating…</div>
+  <div class="loader-text">Aligning planets for your birth chart.<br>Reading your Rashi and Nakshatra…</div>
+</div>
+
+<!-- S7: Dashboard -->
+<div class="screen" id="s7">
+  <div class="dash-header">
+    <div class="dash-greeting">Namaste,</div>
+    <div class="dash-name" id="dash-name">—</div>
+    <div class="dash-rashi" id="dash-rashi">♏ Vrishchika Rashi · Jyeshtha Nakshatra</div>
+  </div>
+  <div class="dash-tabs">
+    <div class="dash-tab active" onclick="showTab(0,this)">Today</div>
+    <div class="dash-tab" onclick="showTab(1,this)">Kundli</div>
+    <div class="dash-tab" onclick="showTab(2,this)">Panchang</div>
+  </div>
+  <div class="dash-content" id="dash-content">
+    <!-- Today tab content rendered by JS -->
+  </div>
+  <div class="nav-bar">
+    <button class="nav-btn active"><span>🏠</span><span>Home</span></button>
+    <button class="nav-btn"><span>🪐</span><span>Kundli</span></button>
+    <button class="nav-btn"><span>📅</span><span>Panchang</span></button>
+    <button class="nav-btn"><span>👤</span><span>Profile</span></button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
 <script>
-if(window.Telegram&&window.Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
-document.getElementById('startBtn').onclick=function(){if(window.Telegram&&window.Telegram.WebApp){Telegram.WebApp.sendData('start');}};
+if(window.Telegram && window.Telegram.WebApp){
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
+
+var userData = {name:'', lang:'en', city:''};
+var curTab = 0;
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+}
+
+function setLang(l, el){
+  userData.lang = l;
+  document.querySelectorAll('.lang-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function makeProg(id, current, total){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = '';
+  for(var i=0;i<total;i++){
+    var d = document.createElement('div');
+    d.className = 'progress-dot' + (i<current?' done':'');
+    el.appendChild(d);
+  }
+}
+
+function saveName(){
+  var n = document.getElementById('inp-name').value.trim();
+  if(!n){document.getElementById('inp-name').focus();return;}
+  userData.name = n;
+  makeProg('prog4',2,4);
+  go(4);
+}
+
+function saveCity(){
+  var c = document.getElementById('inp-city').value.trim();
+  if(!c){document.getElementById('inp-city').focus();return;}
+  userData.city = c;
+  go(6);
+  setTimeout(function(){
+    document.getElementById('dash-name').textContent = userData.name;
+    var rashis = ['♈ Mesha','♉ Vrishabha','♊ Mithuna','♋ Karka','♌ Simha','♍ Kanya','♎ Tula','♏ Vrishchika','♐ Dhanu','♑ Makara','♒ Kumbha','♓ Meena'];
+    var naks = ['Ashwini','Bharani','Rohini','Ardra','Punarvasu','Pushya','Magha','Purva Phalguni','Hasta','Chitra','Swati','Jyeshtha','Mula','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Uttara Bhadrapada','Revati'];
+    var r = rashis[Math.floor(Math.random()*12)];
+    var nk = naks[Math.floor(Math.random()*19)];
+    document.getElementById('dash-rashi').textContent = r + ' · ' + nk + ' Nakshatra';
+    showTab(0);
+    go(7);
+  }, 2800);
+}
+
+var tabContents = [
+  `<div class="card"><div class="card-title">Today's Rashifal</div><div class="card-big">वोभदिन</div><div class="card-body">Today is highly auspicious for new beginnings. The Moon transits your 5th house.</div></div><div class="card"><div class="card-title">Auspicious Times</div><div class="card-body"><div class="panchang-row"><span class="panchang-label">Brahma Muhurta</span><span class="panchang-value">04:32 – 05:20</span></div><div class="panchang-row"><span class="panchang-label">Rahu Kaal</span><span class="panchang-value">09:00 – 10:30</span></div></div></div>`,
+  `<div class="card"><div class="card-title">Planetary Positions</div><div class="card-body"><div class="planet-row"><span class="planet-icon">☀️</span><span class="planet-name">Sun</span><span class="planet-sign">Simha · 3rd</span></div><div class="planet-row"><span class="planet-icon">🌙</span><span class="planet-name">Moon</span><span class="planet-sign">Vrishchika · 5th</span></div><div class="planet-row"><span class="planet-icon">♃</span><span class="planet-name">Jupiter</span><span class="planet-sign">Karka · 11th</span></div><div class="planet-row"><span class="planet-icon">♄</span><span class="planet-name">Saturn</span><span class="planet-sign">Makara · 5th</span></div></div></div>`,
+  `<div class="card"><div class="card-title">Today's Panchang</div><div class="card-body"><div class="panchang-row"><span class="panchang-label">Tithi</span><span class="panchang-value">Shukla Dashami</span></div><div class="panchang-row"><span class="panchang-label">Nakshatra</span><span class="panchang-value">Vishakha</span></div><div class="panchang-row"><span class="panchang-label">Yoga</span><span class="panchang-value">Shubha</span></div><div class="panchang-row"><span class="panchang-label">Sunrise</span><span class="panchang-value">06:12 AM</span></div></div></div>`
+];
+function showTab(n,el){curTab=n;document.querySelectorAll('.dash-tab').forEach(function(t,i){t.classList.toggle('active',i===n)});document.getElementById('dash-content').innerHTML=tabContents[n];}
+(function(){
+  var d=document.getElementById('inp-day'),m=document.getElementById('inp-month'),y=document.getElementById('inp-year');
+  for(var i=1;i<=31;i++)d.innerHTML+='<option>'+i'</option>';
+  ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach(function(s,i){m.innerHTML+='<option value='+(i+1)+'>'+s+'</option>';});
+  var yr=new Date().getFullYear();for(var j=yr-5;j>=yr-80;j--)y.innerHTML+='<option>'+j+'</option>';
+  d.value=15;m.value=6;y.value=1990;
+  makeProg('prog3',1,4);makeProg('prog4',2,4);makeProg('prog5',3,4);
+})();
 </script>
 </body>
 </html>
