@@ -357,7 +357,8 @@ function doSearchCity(q){
   fetch(API + '/api/location/search?q=' + encodeURIComponent(q), {
     headers: {'x-init-data': idata}
   }).then(function(r){ return r.json(); }).then(function(data){
-    showCityDrop(data.results || []);
+    var results = Array.isArray(data) ? data : (data.results || data.data || []);
+    showCityDrop(results);
   }).catch(function(){});
 }
 
