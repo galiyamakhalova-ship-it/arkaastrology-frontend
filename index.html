@@ -105,6 +105,21 @@ select.input-field option{background:#1A1533}
 .city-opt:last-child{border-bottom:none}
 .city-opt:hover,.city-opt:active{background:rgba(201,168,76,0.12)}
 .city-err{font-size:12px;color:#ff6b6b;margin-top:6px;display:none}
+
+/* Profile screen */
+#s8{padding:0;align-items:stretch}
+.profile-header{background:linear-gradient(180deg,var(--purple2) 0%,transparent 100%);padding:52px 20px 24px;text-align:center;flex-shrink:0}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.profile-name{font-size:22px;font-weight:700;margin-bottom:4px}
+.profile-sign{font-size:13px;color:var(--gold)}
+.profile-body{flex:1;overflow-y:auto;padding:20px}
+.profile-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.profile-row:last-child{border-bottom:none}
+.profile-key{font-size:12px;color:var(--text-dim);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.profile-val{font-size:14px;font-weight:600;text-align:right;max-width:60%}
+.btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,0.2);color:#fff;padding:14px 28px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:8px}
+.btn-outline:active{opacity:.7}
+.btn-danger{background:transparent;border:1.5px solid rgba(255,80,80,0.4);color:#ff6b6b;padding:14px 28px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:8px}
 </style>
 </head>
 <body>
@@ -143,7 +158,7 @@ select.input-field option{background:#1A1533}
   <div class="section-emoji">🙏</div>
   <div class="screen-title">Your Name</div>
   <div class="screen-desc" style="margin-bottom:32px">How should we address you<br>in your readings?</div>
-  <div clas="input-group">
+  <div class="input-group">
     <label class="input-label">Full Name</label>
     <input class="input-field" id="inp-name" type="text" placeholder="e.g. Priya Sharma" autocomplete="off">
   </div>
@@ -153,7 +168,7 @@ select.input-field option{background:#1A1533}
 <!-- S4: Birth Date -->
 <div class="screen" id="s4">
   <div class="progress" id="prog4"></div>
-  <div class="section-emoji">🗓</div>
+  <div class="section-emoji">🗓️</div>
   <div class="screen-title">Date of Birth</div>
   <div class="screen-desc" style="margin-bottom:32px">Your exact birth date is needed<br>for Kundli calculations</div>
   <div class="row">
@@ -170,7 +185,7 @@ select.input-field option{background:#1A1533}
       <select class="input-field" id="inp-year"></select>
     </div>
   </div>
-  <div class="input-group" style="max-width:340px">
+  <div class="input-groug" style="max-width:340px">
     <label class="input-label">Time of Birth</label>
     <input class="input-field" id="inp-time" type="time">
     <p style="font-size:11px;color:var(--text-faint);margin-top:6px">Leave blank if unknown</p>
@@ -182,7 +197,7 @@ select.input-field option{background:#1A1533}
 <!-- S5: City -->
 <div class="screen" id="s5">
   <div class="progress" id="prog5"></div>
-  <div class="section-emoji">📍 </div>
+  <div class="section-emoji">📍</div>
   <div class="screen-title">Birth Place</div>
   <div class="screen-desc" style="margin-bottom:32px">Your birth city helps calculate<br>accurate Lagna and planetary positions</div>
   <div class="input-group" style="max-width:340px;position:relative">
@@ -216,11 +231,41 @@ select.input-field option{background:#1A1533}
   <div class="dash-content" id="dash-content">
     <!-- Today tab content rendered by JS -->
   </div>
+  <div class="nav-bar" id="dash-nav">
+    <button class="nav-btn active" onclick="showTab(0,this);dashNav(0)"><span>🏠</span><span>Home</span></button>
+    <button class="nav-btn" onclick="showTab(1,this);dashNav(1)"><span>🪐</span><span>Kundli</span></button>
+    <button class="nav-btn" onclick="showTab(2,this);dashNav(2)"><span>📅</span><span>Panchang</span></button>
+    <button class="nav-btn" onclick="go(8)"><span>👤</span><span>Profile</span></button>
+  </div>
+</div>
+
+<!-- S8: Profile -->
+<div class="screen" id="s8">
+  <div class="profile-header">
+    <div class="profile-avatar">🪐</div>
+    <div class="profile-name" id="prof-name">—</div>
+    <div class="profile-sign" id="prof-sign">—</div>
+  </div>
+  <div class="profile-body">
+    <div class="card">
+      <div class="card-title">Birth Details</div>
+      <div class="profile-row"><span class="profile-key">Date</span><span class="profile-val" id="prof-date">—</span></div>
+      <div class="profile-row"><span class="profile-key">Time</span><span class="profile-val" id="prof-time">—</span></div>
+      <div class="profile-row"><span class="profile-key">City</span><span class="profile-val" id="prof-city">—</span></div>
+      <div class="profile-row"><span class="profile-key">Timezone</span><span class="profile-val" id="prof-tz">—</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Preferences</div>
+      <div class="profile-row"><span class="profile-key">Language</span><span class="profile-val" id="prof-lang">English</span></div>
+    </div>
+    <button class="btn-outline" onclick="go(7)">← Back to Dashboard</button>
+    <button class="btn-danger" onclick="clearProfile()">Reset & Re-onboard</button>
+  </div>
   <div class="nav-bar">
-    <button class="nav-btn active"><span>🏠</span><span>Home</span></button>
-    <button class="nav-btn"><span>🪐</span><span>Kundli</span></button>
-    <button class="nav-btn"><span>📅</span><span>Panchang</span></button>
-    <button class="nav-btn"><span>👤</span><span>Profile</span></button>
+    <button class="nav-btn" onclick="go(7)"><span>🏠</span><span>Home</span></button>
+    <button class="nav-btn" onclick="go(7);showTab(1,null)"><span>🪐</span><span>Kundli</span></button>
+    <button class="nav-btn" onclick="go(7);showTab(2,null)"><span>📅</span><span>Panchang</span></button>
+    <button class="nav-btn active"><span>👤</span><span>Profile</span></button>
   </div>
 </div>
 
@@ -314,6 +359,7 @@ function go(n){
   var screens = document.querySelectorAll('.screen');
   for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
   document.getElementById('s'+n).classList.add('active');
+  if(n===8) showProfile();
 }
 
 function setLang(l, el){
@@ -345,26 +391,29 @@ function saveName(){
 // ── City autocomplete ───────────────────────────────
 function onCityInput(val){
   document.getElementById('city-error').style.display = 'none';
-  selLat = null; selLon = null;
+  seLat = null; selLon = null;
   clearTimeout(cityTimer);
   if(val.length < 2){ hideCityDrop(); return; }
   cityTimer = setTimeout(function(){ doSearchCity(val); }, 400);
 }
 
 function doSearchCity(q){
-  // Use OpenStreetMap Nominatim — no auth required, always works
+  // Use OpenStreetMap Nominatim — uno auth required, always works
   fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) +
-    '&format=json&limit=6&addressdetails=1&featuretype=city', {
-    headers: {'Accept-Language': 'en', 'User-Agent': 'ArkaAstrology/1.0'}
+    '&format=json&limit=8&addressdetails=1', {
+    headers: {'Accept-Language': 'en'}
   }).then(function(r){ return r.json(); }).then(function(data){
-    var results = data.map(function(r){
+    var results = data.filter(function(r){
+      var t = r.type || ''; var cls = r.class || '';
+      return cls === 'place' || t === 'city' || t === 'town' || t === 'village' || t === 'hamlet' || t === 'suburb' || t === 'administrative';
+    }).map(function(r){
       var addr = r.address || {};
-      var city = addr.city || addr.town || addr.village || addr.county || r.name || '';
-      var state = addr.state || '';
+      var city = addr.city || addr.town || addr.village || addr.hamlet || addr.suburb || addr.county || r.name || '';
+      var state = addr.state || addr['state_district'] || '';
       var country = addr.country || '';
       var label = city + (state && state !== city ? ', ' + state : '') + (country ? ', ' + country : '');
       return { name: label, lat: parseFloat(r.lat), lon: parseFloat(r.lon) };
-    }).filter(function(r){ return r.name.length > 1; });
+    }).filter(function(r){ return r.name.length > 1; }).slice(0, 6);
     showCityDrop(results);
   }).catch(function(){
     // Fallback: try backend
@@ -452,6 +501,15 @@ function saveCity(){
     }).catch(function(){});
   }
 
+  // Save to localStorage for repeat visits
+  try {
+    localStorage.setItem('arka_profile', JSON.stringify({
+      name: userData.name, lang: userData.lang, city: c,
+      lat: selLat, lon: selLon, tz: selTz,
+      birth_date: bDate, birth_time: time
+    }));
+  } catch(e){}
+
   setTimeout(function(){
     document.getElementById('dash-name').textContent = userData.name;
     showTab(0, null);
@@ -463,7 +521,7 @@ function saveCity(){
 // ── Dashboard data ──────────────────────────────────
 function loadDashboard(){
   var idata = initData();
-  if(!idata){ return; }
+  if(!idata){ return; } // static placeholder content already visible
 
   fetch(API + '/api/rashifal', {headers: {'x-init-data': idata}})
     .then(function(r){ return r.ok ? r.json() : null; })
@@ -478,7 +536,8 @@ function loadDashboard(){
         if(bodyEl) bodyEl.textContent = data.prediction;
         var bigEl = t0 ? t0.querySelector('.card-big') : null;
         if(bigEl) bigEl.textContent = data.is_full ? 'Full Reading' : 'Today';
-        document.getElementById('dash-content').innerHTML = t0.innerHTML;
+        // refresh dash-content if user is still on tab 0
+        if(curTab === 0) document.getElementById('dash-content').innerHTML = t0.innerHTML;
       }
     }).catch(function(){});
 
@@ -500,20 +559,76 @@ function loadDashboard(){
       if(rows){
         var card = t2.querySelector('.card .card-body');
         if(card) card.innerHTML = rows;
+        // refresh dash-content if user is on tab 2
+        if(curTab === 2) document.getElementById('dash-content').innerHTML = t2.innerHTML;
       }
     }).catch(function(){});
 }
 
 // ── Tabs ────────────────────────────────────────────
+function dashNav(n){
+  var nav = document.getElementById('dash-nav');
+  if(!nav) return;
+  var btns = nav.querySelectorAll('.nav-btn');
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle('active', i===n);
+}
+
 function showTab(n, el){
   curTab = n;
   var tabs = document.querySelectorAll('.dash-tab');
   for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active',i===n);
   document.getElementById('dash-content').innerHTML = document.getElementById('tab-'+n).innerHTML;
+  dashNav(n);
+}
+
+// ── Profile screen ───────────────────────────────────
+function showProfile(){
+  var p = null;
+  try { p = JSON.parse(localStorage.getItem('arka_profile')); } catch(e){}
+  if(!p) return;
+  var sign = '';
+  if(p.birth_date){
+    var parts = p.birth_date.split('-');
+    if(parts.length===3){
+      var m=parseInt(parts[1]), d=parseInt(parts[2]);
+      var signs=[['Capricorn',1,19],['Aquarius',2,18],['Pisces',3,20],['Aries',4,19],['Taurus',5,20],['Gemini',6,20],['Cancer',7,22],['Leo',8,22],['Virgo',9,22],['Libra',10,22],['Scorpio',11,21],['Sagittarius',12,21],['Capricorn',12,31]];
+      for(var i=0;i<signs.length;i++){
+        if(m<signs[i][1]||(m===signs[i][1]&&d<=signs[i][2])){ sign=signs[i][0]; break; }
+      }
+      if(!sign) sign='Capricorn';
+    }
+  }
+  var el=document.getElementById('prof-name'); if(el) el.textContent=p.name||'—';
+  var el2=document.getElementById('prof-sign'); if(el2) el2.textContent=sign?(sign+' ♐'):'—';
+  var el3=document.getElementById('prof-date'); if(el3) el3.textContent=p.birth_date||'—';
+  var el4=document.getElementById('prof-time'); if(el4) el4.textContent=p.birth_time||'—';
+  var el5=document.getElementById('prof-city'); if(el5) el5.textContent=p.city||'—';
+  var el6=document.getElementById('prof-tz'); if(el6){
+    var tz=p.tz; el6.textContent=(tz!=null?(tz>=0?'UTC+'+tz:'UTC'+tz):'—');
+  }
+  document.getElementById('dash-name').textContent=p.name||'';
+}
+
+function clearProfile(){
+  try { localStorage.removeItem('arka_profile'); } catch(e){}
+  location.reload();
 }
 
 // ── Check existing user (skip onboarding) ───────────
 function checkExistingUser(){
+  // 1. Check localStorage first (works outside Telegram too)
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('arka_profile')); } catch(e){}
+  if(saved && saved.name && saved.city){
+    userData.name = saved.name;
+    userData.lang = saved.lang || 'en';
+    document.getElementById('dash-name').textContent = saved.name;
+    showTab(0, null);
+    go(7);
+    loadDashboard();
+    return;
+  }
+  // 2. Fallback: try API (only works inside Telegram)
   var idata = initData();
   if(!idata) return;
   fetch(API + '/api/me', {headers: {'x-init-data': idata}})
