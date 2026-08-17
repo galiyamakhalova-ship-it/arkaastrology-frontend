@@ -87,6 +87,9 @@ select.input-field option{background:#1A1533}
 .panchang-row:last-child{border-bottom:none}
 .panchang-label{font-size:12px;color:var(--text-dim)}
 .panchang-value{font-size:13px;font-weight:600;text-align:right}
+.btn-stars{width:100%;padding:14px;background:linear-gradient(135deg,#F4C542,#E8A020);color:#1a0a00;font-weight:700;font-size:15px;border:none;border-radius:12px;cursor:pointer;margin-top:4px;letter-spacing:.02em}
+.btn-stars:disabled{opacity:.6;cursor:default}
+.paywall-card{border-color:rgba(244,197,66,0.25);background:rgba(244,197,66,0.06)}
 .nav-bar{display:flex;background:#100D22;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
 .nav-btn{flex:1;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--text-faint);font-size:10px;font-weight:600;border:none;background:none;font-family:inherit}
 .nav-btn.active{color:var(--gold)}
@@ -185,7 +188,7 @@ select.input-field option{background:#1A1533}
       <select class="input-field" id="inp-year"></select>
     </div>
   </div>
-  <div class="input-groug" style="max-width:340px">
+  <div class="input-group" style="max-width:340px">
     <label class="input-label">Time of Birth</label>
     <input class="input-field" id="inp-time" type="time">
     <p style="font-size:11px;color:var(--text-faint);margin-top:6px">Leave blank if unknown</p>
@@ -294,6 +297,13 @@ select.input-field option{background:#1A1533}
       <div class="panchang-row"><span class="panchang-label">Lucky Direction</span><span class="panchang-value">East</span></div>
     </div>
   </div>
+  <div class="card paywall-card" id="paywall-card">
+    <div class="card-title">🔒 Full Reading</div>
+    <div class="card-body" style="text-align:center">
+      <div style="margin-bottom:12px;color:var(--text-dim);font-size:13px">Love · Career · Health · 5 AI questions</div>
+      <button class="btn-stars" id="buy-btn" onclick="buyPass()">🌟 Get Full Access — 75 Stars</button>
+    </div>
+  </div>
 </div>
 
 <div id="tab-1" style="display:none">
@@ -391,14 +401,14 @@ function saveName(){
 // ── City autocomplete ───────────────────────────────
 function onCityInput(val){
   document.getElementById('city-error').style.display = 'none';
-  seLat = null; selLon = null;
+  selLat = null; selLon = null;
   clearTimeout(cityTimer);
   if(val.length < 2){ hideCityDrop(); return; }
   cityTimer = setTimeout(function(){ doSearchCity(val); }, 400);
 }
 
 function doSearchCity(q){
-  // Use OpenStreetMap Nominatim — uno auth required, always works
+  // Use OpenStreetMap Nominatim — no auth required, always works
   fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) +
     '&format=json&limit=8&addressdetails=1', {
     headers: {'Accept-Language': 'en'}
@@ -612,6 +622,41 @@ function showProfile(){
 function clearProfile(){
   try { localStorage.removeItem('arka_profile'); } catch(e){}
   location.reload();
+}
+
+// ─── Stars Payment ────────────────────────────────────────────────────────────
+function buyPass(){
+  var idata = initData();
+  var btn = document.getElementById('buy-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Loading...'; }
+  if(!idata){
+    if(btn){ btn.disabled = false; btn.textContent = '🌟 Get Full Access — 75 Stars'; }
+    alert('Open in Telegram to purchase');
+    return;
+  }
+  fetch(API + '/api/payment/create-invoice', {
+    method: 'POST',
+    headers: {'x-init-data': idata}
+  }).then(function(r){ return r.json(); }).then(function(data){
+    if(data.invoice_url && window.Telegram && window.Telegram.WebApp){
+      Telegram.WebApp.openInvoice(data.invoice_url, function(status){
+        if(status === 'paid'){
+          if(btn){ btn.textContent = '✨ Pass Activated!'; btn.disabled = true; }
+          // Hide paywall card
+          var card = document.getElementById('paywall-card');
+          if(card) card.style.display = 'none';
+          // Reload dashboard data
+          loadDashboard();
+        } else {
+          if(btn){ btn.disabled = false; btn.textContent = '🌟 Get Full Access — 75 Stars'; }
+        }
+      });
+    } else {
+      if(btn){ btn.disabled = false; btn.textContent = '🌟 Get Full Access — 75 Stars'; }
+    }
+  }).catch(function(){
+    if(btn){ btn.disabled = false; btn.textContent = '🌟 Get Full Access — 75 Stars'; }
+  });
 }
 
 // ── Check existing user (skip onboarding) ───────────
