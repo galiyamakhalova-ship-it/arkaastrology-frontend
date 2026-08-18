@@ -670,7 +670,24 @@ function checkExistingUser(){
     document.getElementById('dash-name').textContent = saved.name;
     showTab(0, null);
     go(7);
-    loadDashboard();
+    var sidata = initData();
+    if(sidata && saved.birth_date){
+      fetch(API + '/api/onboarding', {
+        method: 'POST',
+        headers: {'x-init-data': sidata, 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: saved.name, birth_date: saved.birth_date,
+          birth_time: saved.birth_time, birth_city: saved.city,
+          latitude: saved.lat, longitude: saved.lon,
+          timezone: saved.tz || '+05:30', language: saved.lang || 'en'
+        })
+      }).then(function(r){ return r.json(); }).then(function(d){
+        if(d && d.rashi) userData.rashi = d.rashi;
+        loadDashboard();
+      }).catch(function(){ loadDashboard(); });
+    } else {
+      loadDashboard();
+    }
     return;
   }
   // 2. Fallback: try API (only works inside Telegram)
