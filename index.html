@@ -546,6 +546,10 @@ function loadDashboard(){
         if(bodyEl) bodyEl.textContent = data.prediction;
         var bigEl = t0 ? t0.querySelector('.card-big') : null;
         if(bigEl) bigEl.textContent = data.is_full ? 'Full Reading' : 'Today';
+        if(data.is_full){
+          var pw = document.getElementById('paywall-card');
+          if(pw) pw.style.display = 'none';
+        }
         // refresh dash-content if user is still on tab 0
         if(curTab === 0) document.getElementById('dash-content').innerHTML = t0.innerHTML;
       }
