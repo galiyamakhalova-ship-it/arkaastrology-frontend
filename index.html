@@ -154,7 +154,6 @@ select.input-field option{background:#1A1533}
   <br>
   <button class="btn-primary" onclick="go(3)" style="max-width:340px;width:100%">Continue →</button>
 </div>
-
 <!-- S3: Name -->
 <div class="screen" id="s3">
   <div class="progress" id="prog3"></div>
@@ -286,7 +285,7 @@ select.input-field option{background:#1A1533}
     <div class="card-body">
       <div class="panchang-row"><span class="panchang-label">Brahma Muhurta</span><span class="panchang-value">04:32 - 05:20</span></div>
       <div class="panchang-row"><span class="panchang-label">Abhijit Muhurta</span><span class="panchang-value">11:48 - 12:36</span></div>
-      <div class="panchang-row"><span class="panchang-label">Rahu Kaal</span><span class="panchang-value">09:00 - 10:30</span></div>
+      <div class="panchang-row"><span class="panchang-label">Rahu Kaal</span><span class="panchang-value" id="rahu-kaal-val">09:00 - 10:30</span></div>
     </div>
   </div>
   <div class="card">
@@ -326,7 +325,6 @@ select.input-field option{background:#1A1533}
     </div>
   </div>
 </div>
-
 <div id="tab-2" style="display:none">
   <div class="card">
     <div class="card-title">Today's Panchang</div>
@@ -406,7 +404,6 @@ function onCityInput(val){
   if(val.length < 2){ hideCityDrop(); return; }
   cityTimer = setTimeout(function(){ doSearchCity(val); }, 400);
 }
-
 function doSearchCity(q){
   // Use OpenStreetMap Nominatim — no auth required, always works
   fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) +
@@ -554,7 +551,6 @@ function loadDashboard(){
         if(curTab === 0) document.getElementById('dash-content').innerHTML = t0.innerHTML;
       }
     }).catch(function(){});
-
   fetch(API + '/api/panchang', {headers: {'x-init-data': idata}})
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(data){
@@ -575,6 +571,13 @@ function loadDashboard(){
         if(card) card.innerHTML = rows;
         // refresh dash-content if user is on tab 2
         if(curTab === 2) document.getElementById('dash-content').innerHTML = t2.innerHTML;
+      }
+      // wire Rahu Kaal into the Today tab's Auspicious Times card
+      if(p.rahu_kaal){
+        var t0 = document.getElementById('tab-0');
+        var rkEl = t0 ? t0.querySelector('#rahu-kaal-val') : null;
+        if(rkEl) rkEl.textContent = p.rahu_kaal;
+        if(curTab === 0) document.getElementById('dash-content').innerHTML = t0.innerHTML;
       }
     }).catch(function(){});
 }
@@ -627,7 +630,6 @@ function clearProfile(){
   try { localStorage.removeItem('arka_profile'); } catch(e){}
   location.reload();
 }
-
 // ─── Stars Payment ────────────────────────────────────────────────────────────
 function buyPass(){
   var idata = initData();
